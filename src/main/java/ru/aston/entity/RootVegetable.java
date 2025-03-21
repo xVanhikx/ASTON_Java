@@ -12,7 +12,7 @@ import java.util.Comparator;
 public class RootVegetable implements Comparable<RootVegetable> {
 
     private String type;
-    private Integer weight;
+    private double weight;
     private String color;
 
     @Override
