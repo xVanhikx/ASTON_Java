@@ -1,156 +1,124 @@
 package ru.aston;
 
-import java.util.Scanner;
+import ru.aston.entity.Book;
+import ru.aston.entity.Car;
+import ru.aston.entity.RootVegetable;
+import ru.aston.strategy.ListContext;
+import ru.aston.strategy.book.BookFileFillStrategy;
+import ru.aston.strategy.book.BookManualFillStrategy;
+import ru.aston.strategy.book.BookRandomFillStrategy;
+import ru.aston.strategy.car.CarFileFillStrategy;
+import ru.aston.strategy.car.CarManualFillStrategy;
+import ru.aston.strategy.car.CarRandomFillStrategy;
+import ru.aston.strategy.rootvegetable.RootVegetableFileFillStrategy;
+import ru.aston.strategy.rootvegetable.RootVegetableManualFillStrategy;
+import ru.aston.strategy.rootvegetable.RootVegetableRandomFillStrategy;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+import static java.lang.Integer.*;
 
 public class Main {
     public static void main(String[] args) {
-
-        Scanner scanner = new Scanner(System.in);
+        ArrayList<?> objects = null;
         boolean running = true;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            while (running) {
 
-        //Сначала выбираем класс с которым будем работать
-        while (running) {
-            System.out.println("Выбираем класс для работы:");
-            System.out.println("1. Автомобиль");
-            System.out.println("2. Книга");
-            System.out.println("3. Корнеплод");
-            System.out.println("0. Выход");
-            int classChoice = scanner.nextInt();
-            scanner.nextLine(); // Очистка буфера ввода
+                System.out.println("Введите изначальную длину массива для ввода данных:");
+                int size = parseInt(reader.readLine());
 
-            if (classChoice == 0) {
-                running = false;
-                System.out.println("Выход из программы.");
-                continue;
-            }
+                System.out.println("Выберите тип данных:\n" +
+                        "1.Автомобили\n" +
+                        "2.Книги\n" +
+                        "3.Корнеплоды");
+                int choiceDataType = parseInt(reader.readLine());
 
-            // Выбираем действие для выбранного класса
-            boolean classRunning = true;
-            while (classRunning) {
-                switch (classChoice) {
+                System.out.println("Введите цифру для выбора способа ввода данных:\n" +
+                        "1.Заполнить вручную.\n" +
+                        "2.Заполнить из файла.\n" +
+                        "3.Заполнить случайно.\n" +
+                        "0.Завершить работу.");
+                int choiceFillStrategy = parseInt(reader.readLine());
+
+                switch (choiceDataType) {
                     case 1:
-                        System.out.println("Выберите действие для автомобиля:");
-                        System.out.println("1. Заполнить данные");
-                        System.out.println("2. Сортировать автомобили");
-                        System.out.println("3. Найти автомобиль");
-                        System.out.println("4. Записать в файл");
-                        System.out.println("0. Вернуться к выбору класса");
-                        break;
-
-                    case 2:
-                        System.out.println("Выберите действие для книги:");
-                        System.out.println("1. Заполнить данные");
-                        System.out.println("2. Сортировать книги");
-                        System.out.println("3. Найти книгу");
-                        System.out.println("4. Записать в файл");
-                        System.out.println("0. Вернуться к выбору класса");
-                        break;
-
-                    case 3:
-                        System.out.println("Выберите действие для корнеплода:");
-                        System.out.println("1. Заполнить данные");
-                        System.out.println("2. Сортировать корнеплоды");
-                        System.out.println("3. Найти корнеплод");
-                        System.out.println("4. Записать в файл");
-                        System.out.println("0. Вернуться к выбору класса");
-                        break;
-
-                    default:
-                        System.out.println("Некорректный выбор класса.");
-                        classRunning = false;
-                        continue;
-                }
-
-                int actionChoice = scanner.nextInt();
-                scanner.nextLine(); // Очистка буфера ввода
-
-                switch (actionChoice) {
-                    case 1:
-                        // Реализация заполнения данными
+                        ListContext<Car> carsContext = new ListContext<>();
+                        if (choiceFillStrategy == 1) {
+                            carsContext.setStrategy(new CarManualFillStrategy());
+                        } else if (choiceFillStrategy == 2) {
+                            System.out.println("Укажите путь к файлу:");
+                            String filePath = reader.readLine();
+                            carsContext.setStrategy(new CarFileFillStrategy(filePath));
+                        } else if (choiceFillStrategy == 3) {
+                            carsContext.setStrategy(new CarRandomFillStrategy());
+                        }
+                        objects = carsContext.fillArray(size);
                         break;
                     case 2:
-                        // Реализация сортировки
+                        ListContext<Book> booksContext = new ListContext<>();
+                        if (choiceFillStrategy == 1) {
+                            booksContext.setStrategy(new BookManualFillStrategy());
+                        } else if (choiceFillStrategy == 2) {
+                            System.out.println("Укажите путь к файлу:");
+                            String filePath = reader.readLine();
+                            booksContext.setStrategy(new BookFileFillStrategy(filePath));
+                        } else if (choiceFillStrategy == 3) {
+                            booksContext.setStrategy(new BookRandomFillStrategy());
+                        }
+                        objects = booksContext.fillArray(size);
                         break;
                     case 3:
-                        // Реализация поиска
-                        break;
-                    case 4:
-                        // Реализация записи в файл
+                        ListContext<RootVegetable> vegetableContext = new ListContext<>();
+                        if (choiceFillStrategy == 1) {
+                            vegetableContext.setStrategy(new RootVegetableManualFillStrategy());
+                        } else if (choiceFillStrategy == 2) {
+                            System.out.println("Укажите путь к файлу:");
+                            String filePath = reader.readLine();
+                            vegetableContext.setStrategy(new RootVegetableFileFillStrategy(filePath));
+                        } else if (choiceFillStrategy == 3) {
+                            vegetableContext.setStrategy(new RootVegetableRandomFillStrategy());
+                        }
+                        vegetableContext.fillArray(size);
                         break;
                     case 0:
-                        classRunning = false; // Вернуться к выбору класса
+                        running = false;
                         break;
 
-                    default:
-                        System.out.println("Некорректный выбор действия");
+                }
+                while (objects != null) {
+                    System.out.println("Выберите действие:\n" +
+                            "1.Сортировать данные\n" +
+                            "2.Найти объект\n" +
+                            "3.Записать в файл\n" +
+                            "4.Вывести данные\n" +
+                            "0.Вернуться к выбору типа данных\n");
+                    int choiceAction = parseInt(reader.readLine());
+
+                    switch (choiceAction) {
+                        case 1 :
+                            break;
+                        case 2 :
+                            break;
+                        case 3 :
+                            break;
+                        case 4:
+                            for (Object object : objects) {
+                                System.out.println(object.toString());
+                            }
+                            break;
+                        case 0 :
+                            objects = null;
+                            break;
+                    }
                 }
             }
+        } catch (IOException exception) {
+            System.out.println("Введены не корректные данные, при вводе данных опирайтесь на шаблон.");
         }
-        scanner.close();
-    }
-
-    // Реализация заполнения данными
-    private static void fillData(Scanner scanner) {
-        System.out.println("Выберите способ заполнения:");
-        System.out.println("1. Из файла");
-        System.out.println("2. Рандомно");
-        System.out.println("3. Вручную");
-        int fillChoice = scanner.nextInt();
-        scanner.nextLine(); // Очистка буфера ввода
-
-        switch (fillChoice) {
-            case 1:
-                // Реализация заполнения из файла
-                break;
-            case 2:
-                // Реализация заполнения рандомными данными
-                break;
-            case 3:
-                // Реализация заполнения вручную
-                break;
-            default:
-                System.out.println("Некорректный выбор.");
-        }
-    }
-
-    // Реализация метода сортировки
-    private static void sortData() {
-
-    }
-
-    // Реализация метода поиска
-    private static void searchElement() {
-
-    }
-
-    // Реализация метода заполнения из файла
-    private static void loadDataFromFile() {
-
-    }
-
-    // Реализация метода для заполнения рандомными данными
-    private static void loadRandomData() {
-
-    }
-
-    // Реализация метода для заполнения вручную Car
-    private static void addCar() {
-
-    }
-
-    // Реализация метода для заполнения вручную Book
-    private static void addBook() {
-
-    }
-
-    // Реализация метода для заполнения вручную RootVegetable
-    private static void addRootVegetable() {
-
-    }
-
-    // Реализация метода записи в файл
-    private static void writeDataToFile() {
-
     }
 
 }
